@@ -1,9 +1,10 @@
 const Employee = require('./lib/Employee.js');
 const generateHtml = require('./lib/GenerateHtml.js');
 var prompting = true;
-
+var oldString=``;
 const employee = new Employee('xyz','3','xyz.email.com');
 employee.getName();
+
 
 
 // TODO: Include packages needed for this application
@@ -16,12 +17,12 @@ const { number } = require('yargs');
 
 
 
- const writeFileAsync = util.promisify(fs.writeFile);
+ const writeFileAsync = async(finalString)=>await util.promisify(fs.writeFile);
 
 // TODO: Create an array of questions for user input
 
-const promptUser = () => {
-    const data = inquirer.prompt([
+const promptUser = async() => {
+    const data = await inquirer.prompt([
       {
         type: 'input',
         name: 'managerName',
@@ -48,12 +49,16 @@ const promptUser = () => {
       validate: numberValidator
       }
     ]);
+    console.log(data);
     return data;
     };
 
 
-   const promptForTeamMember = async() =>{
+   const promptForTeamMember = async(managerData,oldString) =>{
       console.log("I am inside prompt for team member");
+      console.log("My manager data is  ------"+managerData);
+      //let oldString =``;
+      const managerData1 = managerData;
     const teamMemberData = await inquirer.prompt([
         {
             type: 'list',
@@ -66,15 +71,22 @@ const promptUser = () => {
     if(teamMemberData.teamMember === "I don't want to add any team member"){
         prompting = false;
         console.log("value inside propmting is "+prompting);
-        return teamMemberData;
+        const finalString = generateHtml.renderhtml(managerData,oldString);
+        console.log(finalString);
+        return finalString;
+        //return generateHtml.renderhtml(managerData,oldString);
     } 
     else{
       console.log("This will append team member data");
-      
-      promptForTeamMember();
+
+       oldString = generateHtml.renderHtml2(teamMemberData);
+    //writeFileAsync('./index.html', myAnswer);
+    console.log(oldString);
+      promptForTeamMember(managerData,oldString);
     }
+  }
     
-  } 
+  
 
 
   const promptEngineerQuestions = () => {
@@ -166,12 +178,13 @@ const promptUser = () => {
 const init = async () => {
   
    promptUser()
-   .then((answers)=>{
-    const myAnswer = generateHtml.renderhtml(answers);
-    writeFileAsync('./index.html', myAnswer);
+   //.then((answers)=>generateHtml.renderhtml(answers))
    
-   })
-   .then(()=>promptForTeamMember())
+    //.then((myAnswer)=>{//writeFileAsync('./index.html', myAnswer)
+   
+   
+  .then((answers)=>promptForTeamMember(answers,oldString))
+  .then((finalString)=>writeFileAsync('./index.html', finalString))
 
     
   .then (()=>console.log("This is a success")) 
