@@ -1,11 +1,13 @@
 const Manager = require('./lib/Manager.js');
 const Employee = require('./lib/Employee.js');
 const Engineer = require('./lib/Engineer.js');
+const Intern = require('./lib/Intern.js');
 
 const generateHtml = require('./lib/GenerateHtml.js');
 var prompting = true;
 var oldString=``;
 var engineerArray=[];
+var internArray = [];
 
 
 
@@ -109,7 +111,7 @@ const promptUser = async() => {
 
   const processTeamMember = async(teamMemberValue,manager)=>{
     if(teamMemberValue === "I don't want to add any team member"){
-      const engineerRender =  generateHtml.generateHtmlEngineer(manager,engineerArray);
+      const engineerRender =  generateHtml.generateHtmlEngineer(manager,engineerArray,internArray);
    
       fs.writeFile("./index.html", engineerRender, (err) => {
         if (err)
@@ -142,8 +144,21 @@ const promptUser = async() => {
       .catch((err)=>console.error(err))   
     }
       
-      else if(teamMemberData.teamMember ==="Intern"){
+      else if(teamMemberValue ==="Intern"){
       console.log("I will keep intern data");
+      const internQuestions= await promptInternQuestions()
+        .then((internQuestions)=>{
+        console.log(internQuestions)
+        const employee = new Employee(internQuestions.name,internQuestions.id,internQuestions.email);
+        console.log("222222 "+employee);
+        const intern = new Intern(internQuestions.name,internQuestions.id,internQuestions.email,internQuestions.internSchool);
+        console.log(intern);
+        internArray.push(intern);
+        console.log(internArray);
+        
+      })
+      .then (()=>console.log("This is a success")) 
+      .catch((err)=>console.error(err))  
       }
 
     promptForTeamMember(manager);
@@ -190,6 +205,42 @@ const promptUser = async() => {
    
   
   };
+
+
+  const promptInternQuestions = async() => {
+   
+    const myInternAnswers =await inquirer.prompt([
+     {
+       type: 'input',
+       name: 'name',
+       message: "What is your intern's name?",
+     },
+     {
+       type: 'input',
+       name: 'id',
+       message: "What is team intern's id",
+     },
+    {
+       type: 'input',
+       name: 'email',
+       message: "What is your intern's email?",
+       validate: inputValidator ,
+        validate: emailValidator  
+
+       
+   },
+     {
+       type: 'input',
+       name: 'internSchool',
+       message: "What is your intern's school name?",
+       validate: inputValidator 
+     //validate: numberValidator
+     }
+   ])
+   return myInternAnswers;
+  
+ 
+ };
 
   
   const inputValidator=async (input) => {
