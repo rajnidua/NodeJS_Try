@@ -1,37 +1,6 @@
-//const { it, jest } = require('@jest/globals');
-//const { describe } = require('yargs');
+
 const Employee = require('../lib/Employee.js');
-//const mainFile = require('../index.js');
-//const inquirer = require('inquirer');
 
-//import { it } from '@jest/globals';
-//import requestInput from './requestInput';
-
-/* jest.mock('inquirer', () => ({
-  prompt: jest.fn(),
-  //registerPrompt: jest.fn(),
-})); */
-
-//jest.mock('inquirer');
-
-
-    /* describe("Initialization",() =>{
-        describe("promptUser",()=>{
-        it('requests input from the user', async () => {
-            inquirer.prompt.mockResolvedValue({ requestInput: 42 });
-            const answer = await requestInput('foo');
-            expect(answer).toBe(42);
-            expect(inquirer.prompt).toHaveBeenCalledWith([
-             {
-              name: 'requestInput',
-              type: 'input',
-              message: 'foo',
-              suggestions: []
-             },
-            ]);
-           });
-        })
-    }) */
     
     describe("Employee class",() =>{
         describe("Initialization",()=>{
@@ -82,7 +51,8 @@ const Employee = require('../lib/Employee.js');
             //const obj1 = obj.getName(2);
             expect(employee.getId()).toBe(id);
         });
-    })
+    });
+   
     
 })
 
