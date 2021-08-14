@@ -19,6 +19,7 @@ const fs= require('fs');
 const { number } = require('yargs');
 
  const util = require('util');
+const { resolve } = require('path');
 
 
 
@@ -76,7 +77,20 @@ const promptUser = async() => {
           }
     ]);
     console.log("srdfdf "+teamMemberData.teamMember );
-    const i = await processTeamMember(teamMemberData.teamMember,manager);
+    processTeamMember(teamMemberData.teamMember,manager);
+    //const engineerRender =  generateHtml.generateHtmlEngineer(i.manager,i.engineerArray);
+    //resolve(engineerRender);
+ //   const output = JSON.stringify(i);
+ /* 
+ fs.writeFile("./index.html", output, (err) => {
+      if (err)
+        console.log(err);
+      else {
+        console.log("File written successfully\n");
+        console.log("The written has the following contents:");
+        console.log(fs.readFileSync("./index.html", "utf8"));
+      }
+    });
     /* fs.writeFile("./index.html", i, (err) => {
       if (err)
         console.log(err);
@@ -88,16 +102,25 @@ const promptUser = async() => {
     }); */
     //.then(()=>console.log("%%%%%%%%% "+this.i))
     //.catch((err)=>console.error(err)) 
-    console.log("******* "+i);
+    // console.log("******* "+i);
     
   }
-
+  
 
   const processTeamMember = async(teamMemberValue,manager)=>{
     if(teamMemberValue === "I don't want to add any team member"){
       const engineerRender =  generateHtml.generateHtmlEngineer(manager,engineerArray);
-        //console.log("kuch bhi likh do" + engineerRender);
-      return engineerRender;
+   
+      fs.writeFile("./index.html", engineerRender, (err) => {
+        if (err)
+          console.log(err);
+        else {
+          console.log("File written successfully\n");
+          console.log("The written has the following contents:");
+          console.log(fs.readFileSync("./index.html", "utf8"));
+        }
+      })
+      return resolve("File Written");
     } 
     else{
       console.log("This will append team member data");
@@ -113,6 +136,7 @@ const promptUser = async() => {
         console.log(engineer);
         engineerArray.push(engineer);
         console.log(engineerArray);
+        
       })
       .then (()=>console.log("This is a success")) 
       .catch((err)=>console.error(err))   
@@ -123,6 +147,7 @@ const promptUser = async() => {
       }
 
     promptForTeamMember(manager);
+
     } 
   }
 
@@ -162,24 +187,7 @@ const promptUser = async() => {
       }
     ])
     return myEngineerAnswers;
-   /*  .then((myEngineerAnswers)=>{
-      //console.log(engineerQuestions)
-      const employee = new Employee(myEngineerAnswers.name,myEngineerAnswers.id,myEngineerAnswers.email);
-      console.log("222222 "+employee);
-      const engineer = new Engineer(myEngineerAnswers.name,myEngineerAnswers.id,myEngineerAnswers.email,myEngineerAnswers.engineerGithub);
-      console.log(engineer);
-      
-      engineerArray.push(engineer);
-      console.log(engineerArray);
-    })
-    .then (()=>console.log("This is a success")) 
-.catch((err)=>console.error(err))  */ 1
-  /* if(myEngineerAnswers){
-    return myEngineerAnswers;
-  }
-  else{
-    reject(new Error("Error in prompting engineer questions"));
-  } */
+   
   
   };
 
@@ -240,15 +248,13 @@ const init = async () => {
    //.then((answers)=>generateHtml.renderhtml(answers))
    
     //.then((myAnswer)=>{//writeFileAsync('./index.html', myAnswer)
-   
-   
-  .then((manager)=>promptForTeamMember(manager))
- // .then((finalString)=>writeFileAsync('./index.html', finalString))
- //.then((finaloutput)=> console.log("bahar se aaraha hoon" + finaloutput)) 
     
-  .then (()=>console.log("This is a success")) 
-  .catch((err)=>console.error(err)) 
+  .then((manager)  => promptForTeamMember(manager))
+  
+ //.then((finaloutput)=> console.log("bahar se aaraha hoon" + finaloutput)) 
+  //.then((resultset)=> console.log("I am out" + resultset));  
+  
 }; 
 
 // Function call to initialize app
- init();
+ init(); 
