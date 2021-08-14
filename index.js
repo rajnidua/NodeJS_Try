@@ -1,9 +1,14 @@
+const Manager = require('./lib/Manager.js');
 const Employee = require('./lib/Employee.js');
+const Engineer = require('./lib/Engineer.js');
+
 const generateHtml = require('./lib/GenerateHtml.js');
 var prompting = true;
 var oldString=``;
-const employee = new Employee('xyz','3','xyz.email.com');
-employee.getName();
+var engineerArray=[];
+
+
+
 
 
 
@@ -17,7 +22,7 @@ const { number } = require('yargs');
 
 
 
- const writeFileAsync = async(finalString)=>await util.promisify(fs.writeFile);
+ const writeFileAsync = util.promisify(fs.writeFile);
 
 // TODO: Create an array of questions for user input
 
@@ -25,20 +30,19 @@ const promptUser = async() => {
     const data = await inquirer.prompt([
       {
         type: 'input',
-        name: 'managerName',
+        name: 'name',
         message: "What is team manager's name?",
       },
       {
         type: 'input',
-        name: 'managerId',
+        name: 'id',
         message: "What is team manager's id",
       },{
         type: 'input',
-        name: 'managerEmail',
+        name: 'email',
         message: "What is team manager's email?",
         validate: inputValidator ,
-         validate: emailValidator  
-
+         validate: emailValidator 
         
     },
       {
@@ -49,16 +53,20 @@ const promptUser = async() => {
       validate: numberValidator
       }
     ]);
+     const employee = new Employee(data.name,data.id,data.email);
+    const manager = new Manager(data.name,data.id,data.email,data.officeNumber); 
+    console.log("My employee name is ==="+employee.name+"My employee email is ===+"+manager.name);
     console.log(data);
-    return data;
+    return manager;
     };
 
 
-   const promptForTeamMember = async(managerData,oldString) =>{
+   const promptForTeamMember = async(manager) =>{
       console.log("I am inside prompt for team member");
-      console.log("My manager data is  ------"+managerData);
-      //let oldString =``;
-      const managerData1 = managerData;
+      console.log("My manager data is  ------"+manager);
+      
+    //const manager = new Manager(data.officeNumber);
+    
     const teamMemberData = await inquirer.prompt([
         {
             type: 'list',
@@ -68,41 +76,77 @@ const promptUser = async() => {
           }
     ]);
     console.log("srdfdf "+teamMemberData.teamMember );
-    if(teamMemberData.teamMember === "I don't want to add any team member"){
-        prompting = false;
-        console.log("value inside propmting is "+prompting);
-        const finalString = generateHtml.renderhtml(managerData,oldString);
-        console.log(finalString);
-        return finalString;
-        //return generateHtml.renderhtml(managerData,oldString);
+    const i = await processTeamMember(teamMemberData.teamMember,manager);
+    /* fs.writeFile("./index.html", i, (err) => {
+      if (err)
+        console.log(err);
+      else {
+        console.log("File written successfully\n");
+        console.log("The written has the following contents:");
+        console.log(fs.readFileSync("./index.html", "utf8"));
+      }
+    }); */
+    //.then(()=>console.log("%%%%%%%%% "+this.i))
+    //.catch((err)=>console.error(err)) 
+    console.log("******* "+i);
+    
+  }
+
+
+  const processTeamMember = async(teamMemberValue,manager)=>{
+    if(teamMemberValue === "I don't want to add any team member"){
+      const engineerRender =  generateHtml.generateHtmlEngineer(manager,engineerArray);
+        //console.log("kuch bhi likh do" + engineerRender);
+      return engineerRender;
     } 
     else{
       console.log("This will append team member data");
-
-       oldString = generateHtml.renderHtml2(teamMemberData);
-    //writeFileAsync('./index.html', myAnswer);
-    console.log(oldString);
-      promptForTeamMember(managerData,oldString);
+      if(teamMemberValue ==="Engineer"){
+        console.log("I will keep engineer data");
+        //oldString = generateHtml.renderHtml2(teamMemberData);
+        const engineerQuestions= await promptEngineerQuestions()
+        .then((engineerQuestions)=>{
+        console.log(engineerQuestions)
+        const employee = new Employee(engineerQuestions.name,engineerQuestions.id,engineerQuestions.email);
+        console.log("222222 "+employee);
+        const engineer = new Engineer(engineerQuestions.name,engineerQuestions.id,engineerQuestions.email,engineerQuestions.engineerGithub);
+        console.log(engineer);
+        engineerArray.push(engineer);
+        console.log(engineerArray);
+      })
+      .then (()=>console.log("This is a success")) 
+      .catch((err)=>console.error(err))   
     }
+      
+      else if(teamMemberData.teamMember ==="Intern"){
+      console.log("I will keep intern data");
+      }
+
+    promptForTeamMember(manager);
+    } 
   }
+
+ 
     
   
 
 
-  const promptEngineerQuestions = () => {
-    return inquirer.prompt([
+  const promptEngineerQuestions = async() => {
+   
+     const myEngineerAnswers =await inquirer.prompt([
       {
         type: 'input',
-        name: 'engineerName',
+        name: 'name',
         message: "What is your engineer's name?",
       },
       {
         type: 'input',
-        name: 'engineerId',
-        message: "What is your engineer's id",
-      },{
+        name: 'id',
+        message: "What is team engineer's id",
+      },
+     {
         type: 'input',
-        name: 'engineerEmail',
+        name: 'email',
         message: "What is your engineer's email?",
         validate: inputValidator ,
          validate: emailValidator  
@@ -111,17 +155,32 @@ const promptUser = async() => {
     },
       {
         type: 'input',
-        name: 'github',
+        name: 'engineerGithub',
         message: "What is your engineer's github username?",
         validate: inputValidator 
       //validate: numberValidator
-      },{
-        type: 'list',
-      message: 'Which type of team member would you like to add',
-      name: 'teamMember',
-      choices: ['Engineer', 'Intern', "I don't want to add any team member"],
       }
-    ]);
+    ])
+    return myEngineerAnswers;
+   /*  .then((myEngineerAnswers)=>{
+      //console.log(engineerQuestions)
+      const employee = new Employee(myEngineerAnswers.name,myEngineerAnswers.id,myEngineerAnswers.email);
+      console.log("222222 "+employee);
+      const engineer = new Engineer(myEngineerAnswers.name,myEngineerAnswers.id,myEngineerAnswers.email,myEngineerAnswers.engineerGithub);
+      console.log(engineer);
+      
+      engineerArray.push(engineer);
+      console.log(engineerArray);
+    })
+    .then (()=>console.log("This is a success")) 
+.catch((err)=>console.error(err))  */ 1
+  /* if(myEngineerAnswers){
+    return myEngineerAnswers;
+  }
+  else{
+    reject(new Error("Error in prompting engineer questions"));
+  } */
+  
   };
 
   
@@ -183,9 +242,9 @@ const init = async () => {
     //.then((myAnswer)=>{//writeFileAsync('./index.html', myAnswer)
    
    
-  .then((answers)=>promptForTeamMember(answers,oldString))
-  .then((finalString)=>writeFileAsync('./index.html', finalString))
-
+  .then((manager)=>promptForTeamMember(manager))
+ // .then((finalString)=>writeFileAsync('./index.html', finalString))
+ //.then((finaloutput)=> console.log("bahar se aaraha hoon" + finaloutput)) 
     
   .then (()=>console.log("This is a success")) 
   .catch((err)=>console.error(err)) 
