@@ -8,7 +8,7 @@ const Intern = require("../lib/Intern");
         it("constructor function should set the school name for Intern",() =>{
             
             const school = "Uni Adelaide";
-            const employee = new Engineer("Rajni", 1, "rajni.dua14@gmail.com", school);
+            const employee = new Intern("Rajni", 1, "rajni.dua14@gmail.com", school);
             expect(employee.school).toBe(school);
         });
     });
@@ -16,7 +16,7 @@ const Intern = require("../lib/Intern");
         it("getRole function should return the value of role as intern",() =>{
             
             const role = "Intern";
-    const employee = new Engineer("Rajni", 1, "rajni.dua14@gmail.com", "Uni Adelaide");
+    const employee = new Intern("Rajni", 1, "rajni.dua14@gmail.com", "Uni Adelaide");
     expect(employee.getRole()).toBe(role);
         });
     });
